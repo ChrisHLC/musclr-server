@@ -8,94 +8,85 @@ const {authenticate} = require('../middleware/authenticate');
 
 const event_params = ['start_date', 'end_date', 'text', 'max_participant_number', 'participant_list'];
 
-eventRouter.get('/', authenticate, (req, res) => {
-    Event.find({
-        creator: req.user._id
-    }).then((events) => {
+eventRouter.delete('/:id', authenticate, async (req, res) => {
+    const id = req.params.id;
+
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    }
+
+    try {
+        const event = await Event.findOneAndRemove({_id: id, creator: req.user._id});
+
+        if (!event) {
+            return res.status(404).send();
+        }
+
+        res.send({event});
+    } catch (e) {
+        res.status(400).send(e);
+    }
+});
+
+eventRouter.get('/', authenticate, async (req, res) => {
+    try {
+        const events = await Event.find({creator: req.user._id});
         res.send({events});
-    }, (e) => {
+    } catch (e) {
         res.status(400).send(e);
-    });
+    }
 });
 
-eventRouter.get('/:id', authenticate, (req, res) => {
-    let id = req.params.id;
+eventRouter.get('/:id', authenticate, async (req, res) => {
+    const id = req.params.id;
 
     if (!ObjectID.isValid(id)) {
         return res.status(404).send();
     }
 
-    Event.findOne({
-        _id: id,
-        creator: req.user._id
-    }).then((event) => {
+    try {
+        const event = await Event.findOne({_id: id, creator: req.user._id});
+
         if (!event) {
             return res.status(404).send();
         }
-
         res.send({event});
-    }).catch((e) => {
+    } catch (e) {
         res.status(400).send(e);
-    });
+    }
 });
 
-eventRouter.delete('/:id', authenticate, (req, res) => {
-    let id = req.params.id;
+eventRouter.patch('/:id', authenticate, async (req, res) => {
+    const id = req.params.id;
+    const body = _.pick(req.body, event_params);
 
     if (!ObjectID.isValid(id)) {
         return res.status(404).send();
     }
 
-    Event.findOneAndRemove({
-        _id: id,
-        creator: req.user._id
-    }).then((event) => {
+    try {
+        const event = await Event.findOneAndUpdate({_id: id, creator: req.user._id}, {$set: body}, {new: true});
         if (!event) {
             return res.status(404).send();
         }
 
         res.send({event});
-    }).catch((e) => {
+    } catch (e) {
         res.status(400).send(e);
-    });
+    }
 });
 
-eventRouter.patch('/:id', authenticate, (req, res) => {
-    let id = req.params.id;
-    let body = _.pick(req.body, event_params);
-
-    if (!ObjectID.isValid(id)) {
-        return res.status(404).send();
-    }
-
-    if (_.isBoolean(body.completed) && body.completed) {
-        body.completedAt = new Date().getTime();
-    } else {
-        body.completed = false;
-        body.completedAt = null;
-    }
-
-    Event.findOneAndUpdate({_id: id, creator: req.user._id}, {$set: body}, {new: true}).then((event) => {
-        if (!event) {
-            return res.status(404).send();
-        }
-
-        res.send({event});
-    }).catch((e) => {
-        res.status(400).send(e);
-    })
-});
-
-eventRouter.post('/', authenticate, (req, res) => {
-    let body = _.pick(req.body, event_params);
+eventRouter.post('/', authenticate, async (req, res) => {
+    const body = _.pick(req.body, event_params);
     body.creator = req.user._id;
-    let event = new Event(body);
+    const event = new Event(body);
 
-    event.save().then((doc) => {
+    try {
+        const doc = await event.save();
         res.status(200).send(doc);
-    }, (e) => {
+    } catch (e) {
         res.status(400).send(e);
-    });
+    }
 });
 
 module.exports = eventRouter;

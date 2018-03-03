@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 
-let UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
@@ -31,7 +31,15 @@ let UserSchema = new mongoose.Schema({
         haltr: {
             type: Number,
             default: 0
-        }
+        },
+        events: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Event'
+        }],
+        friends: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }]
     }],
     tokens: [{
         access: {
@@ -46,16 +54,16 @@ let UserSchema = new mongoose.Schema({
 });
 
 UserSchema.methods.toJSON = function () {
-    let user = this;
-    let userObject = user.toObject();
+    const user = this;
+    const userObject = user.toObject();
 
-    return _.pick(userObject, ['_id', 'email', 'profile[0].username', 'profile[0].haltr']);
+    return _.pick(userObject, ['_id', 'email', 'profile']);
 };
 
 UserSchema.methods.generateAuthToken = function () {
-    let user = this;
-    let access = 'auth';
-    let token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
+    const user = this;
+    const access = 'auth';
+    const token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
 
     user.tokens.push({access, token});
 
@@ -65,7 +73,7 @@ UserSchema.methods.generateAuthToken = function () {
 };
 
 UserSchema.methods.removeToken = function (token) {
-    let user = this;
+    const user = this;
 
     return user.update({
         $pull: {
@@ -75,7 +83,7 @@ UserSchema.methods.removeToken = function (token) {
 };
 
 UserSchema.statics.findByToken = function (token) {
-    let User = this;
+    const User = this;
     let decoded;
 
     try {
@@ -92,7 +100,7 @@ UserSchema.statics.findByToken = function (token) {
 };
 
 UserSchema.statics.findByCredentials = function (email, password) {
-    let User = this;
+    const User = this;
 
     return User.findOne({email}).then((user) => {
         if (!user) {
@@ -112,7 +120,7 @@ UserSchema.statics.findByCredentials = function (email, password) {
 };
 
 UserSchema.pre('save', function (next) {
-    let user = this;
+    const user = this;
 
     if (user.isModified('password')) {
         bcrypt.genSalt(10, (err, salt) => {
@@ -126,6 +134,6 @@ UserSchema.pre('save', function (next) {
     }
 });
 
-let User = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', UserSchema);
 
 module.exports = {User};

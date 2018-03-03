@@ -43,12 +43,12 @@ EventSchema.set('toObject', {
 });
 
 EventSchema.methods.toJSON = function () {
-    let event = this;
-    let eventObject = event.toObject();
+    const event = this;
+    const eventObject = event.toObject();
 
     return _.pick(eventObject, event_schema_params);
 };
 
-let Event = mongoose.model('Event', EventSchema);
+const Event = mongoose.model('Event', EventSchema);
 
 module.exports = {Event};
