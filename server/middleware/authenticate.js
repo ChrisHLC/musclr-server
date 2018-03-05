@@ -1,7 +1,7 @@
 const {User} = require('../models/user.model');
 
 const authenticate = async (req, res, next) => {
-    const token = req.header('x-auth');
+    const token = req.header('X-Authorization');
 
     try {
         const user = await User.findByToken(token);

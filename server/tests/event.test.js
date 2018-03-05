@@ -17,7 +17,7 @@ describe('Tests on Events', () => {
 
             request(app)
                 .delete(`/events/${hexId}`)
-                .set('x-auth', users[1].tokens[0].token)
+                .set('X-Authorization', users[1].tokens[0].token)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body.event.id).toBe(hexId);
@@ -39,7 +39,7 @@ describe('Tests on Events', () => {
 
             request(app)
                 .delete(`/events/${hexId}`)
-                .set('x-auth', users[1].tokens[0].token)
+                .set('X-Authorization', users[1].tokens[0].token)
                 .expect(404)
                 .end((err, res) => {
                     if (err) {
@@ -58,7 +58,7 @@ describe('Tests on Events', () => {
 
             request(app)
                 .delete(`/events/${hexId}`)
-                .set('x-auth', users[1].tokens[0].token)
+                .set('X-Authorization', users[1].tokens[0].token)
                 .expect(404)
                 .end(done);
         });
@@ -66,7 +66,7 @@ describe('Tests on Events', () => {
         it('should return 404 if object id is invalid', (done) => {
             request(app)
                 .delete('/events/123wtf')
-                .set('x-auth', users[1].tokens[0].token)
+                .set('X-Authorization', users[1].tokens[0].token)
                 .expect(404)
                 .end(done);
         });
@@ -76,7 +76,7 @@ describe('Tests on Events', () => {
         it('should get user\'s one event', (done) => {
             request(app)
                 .get('/events')
-                .set('x-auth', users[0].tokens[0].token)
+                .set('X-Authorization', users[0].tokens[0].token)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body.events.length).toBe(1);
@@ -89,7 +89,7 @@ describe('Tests on Events', () => {
         it('should return event doc', (done) => {
             request(app)
                 .get(`/events/${events[0]._id.toHexString()}`)
-                .set('x-auth', users[0].tokens[0].token)
+                .set('X-Authorization', users[0].tokens[0].token)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body.event.text).toBe(events[0].text);
@@ -100,7 +100,7 @@ describe('Tests on Events', () => {
         it('should not return event doc created by other user', (done) => {
             request(app)
                 .get(`/events/${events[1]._id.toHexString()}`)
-                .set('x-auth', users[0].tokens[0].token)
+                .set('X-Authorization', users[0].tokens[0].token)
                 .expect(404)
                 .end(done);
         });
@@ -110,7 +110,7 @@ describe('Tests on Events', () => {
 
             request(app)
                 .get(`/events/${hexId}`)
-                .set('x-auth', users[0].tokens[0].token)
+                .set('X-Authorization', users[0].tokens[0].token)
                 .expect(404)
                 .end(done);
         });
@@ -118,7 +118,7 @@ describe('Tests on Events', () => {
         it('should return 404 for non-object ids', (done) => {
             request(app)
                 .get('/events/123wtf')
-                .set('x-auth', users[0].tokens[0].token)
+                .set('X-Authorization', users[0].tokens[0].token)
                 .expect(404)
                 .end(done);
         });
@@ -131,7 +131,7 @@ describe('Tests on Events', () => {
 
             request(app)
                 .patch(`/events/${hexId}`)
-                .set('x-auth', users[0].tokens[0].token)
+                .set('X-Authorization', users[0].tokens[0].token)
                 .send({
                     text,
                     max_participant_number: 2,
@@ -152,7 +152,7 @@ describe('Tests on Events', () => {
 
             request(app)
                 .patch(`/events/${hexId}`)
-                .set('x-auth', users[1].tokens[0].token)
+                .set('X-Authorization', users[1].tokens[0].token)
                 .send({
                     text
                 })
@@ -174,7 +174,7 @@ describe('Tests on Events', () => {
 
             request(app)
                 .post('/events')
-                .set('x-auth', users[0].tokens[0].token)
+                .set('X-Authorization', users[0].tokens[0].token)
                 .send(event)
                 .expect(200)
                 .expect((res) => {
@@ -197,7 +197,7 @@ describe('Tests on Events', () => {
         it('should not create event with invalid body data', (done) => {
             request(app)
                 .post('/events')
-                .set('x-auth', users[0].tokens[0].token)
+                .set('X-Authorization', users[0].tokens[0].token)
                 .send({})
                 .expect(400)
                 .end((err, res) => {
