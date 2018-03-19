@@ -1,3 +1,5 @@
+// here we will create the data for all our tests
+
 const {ObjectID} = require('mongodb');
 const jwt = require('jsonwebtoken');
 

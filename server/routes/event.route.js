@@ -8,6 +8,9 @@ const {authenticate} = require('../middleware/authenticate');
 
 const event_params = ['start_date', 'end_date', 'text', 'max_participant_number', 'participant_list'];
 
+// PRO TIP
+// notice the async and await, it's just an aesthetic change, but it allows you to manipulate Promise in a more "synchronous" way
+// no more then and the catch is replaced by a general try/catch
 eventRouter.delete('/:id', authenticate, async (req, res) => {
     const id = req.params.id;
 

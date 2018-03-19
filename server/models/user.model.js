@@ -53,6 +53,8 @@ const UserSchema = new mongoose.Schema({
     }]
 });
 
+// PRO TIP
+// use _.pick to select which items you want to send in the response, for example, why should we send back the password?
 UserSchema.methods.toJSON = function () {
     const user = this;
     const userObject = user.toObject();
@@ -60,6 +62,9 @@ UserSchema.methods.toJSON = function () {
     return _.pick(userObject, ['_id', 'email', 'profile']);
 };
 
+// PRO TIP
+// This is a basic implementation of a token, using the id of the user, the JWT_SECRET is here to prevent someone to
+// access someone's else data, that's why the config is not in the git
 UserSchema.methods.generateAuthToken = function () {
     const user = this;
     const access = 'auth';
@@ -82,6 +87,9 @@ UserSchema.methods.removeToken = function (token) {
     });
 };
 
+// PRO TIP
+// notice the difference between UserSchema.statics and UserSchema.methods, methods will apply to an User object
+// while the statics will apply the UserSchema
 UserSchema.statics.findByToken = function (token) {
     const User = this;
     let decoded;
@@ -119,6 +127,9 @@ UserSchema.statics.findByCredentials = function (email, password) {
     });
 };
 
+// PRO TIP
+// Mongoose allows many hooks, her for example before saving a User, you encrypt his password (you never keep a clear
+// password in a database
 UserSchema.pre('save', function (next) {
     const user = this;
 

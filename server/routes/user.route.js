@@ -35,7 +35,7 @@ userRouter.post('/', async (req, res) => {
         const user = new User(body);
         await user.save();
         const token = await user.generateAuthToken();
-        res.header('X-Authorization', token).send(user);
+        res.header('x-authorization', token).send(user);
     } catch (e) {
         res.status(400).send(e)
     }
@@ -46,7 +46,7 @@ userRouter.post('/login', async (req, res) => {
         const body = _.pick(req.body, ['email', 'password']);
         const user = await User.findByCredentials(body.email, body.password);
         const token = await user.generateAuthToken();
-        res.header('X-Authorization', token).send(user);
+        res.header('x-authorization', token).send(user);
     } catch (e) {
         res.status(400).send(e);
     }

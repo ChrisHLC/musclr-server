@@ -13,7 +13,7 @@ describe('Tests on Users', () => {
         it('should return user if authenticated', (done) => {
             request(app)
                 .get('/users/me')
-                .set('X-Authorization', users[0].tokens[0].token)
+                .set('x-authorization', users[0].tokens[0].token)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body._id).toBe(users[0]._id.toHexString());
@@ -43,7 +43,7 @@ describe('Tests on Users', () => {
                 .send({email, password})
                 .expect(200)
                 .expect((res) => {
-                    expect(res.headers['X-Authorization']).toBeTruthy();
+                    expect(res.headers['x-authorization']).toBeTruthy();
                     expect(res.body._id).toBeTruthy();
                     expect(res.body.email).toBe(email);
                 })
@@ -93,7 +93,7 @@ describe('Tests on Users', () => {
                 })
                 .expect(200)
                 .expect((res) => {
-                    expect(res.headers['X-Authorization']).toBeTruthy();
+                    expect(res.headers['x-authorization']).toBeTruthy();
                 })
                 .end((err, res) => {
                     if (err) {
@@ -103,7 +103,7 @@ describe('Tests on Users', () => {
                     User.findById(users[1]._id).then((user) => {
                         expect(user.tokens[1]).toMatchObject({
                             access: 'auth',
-                            token: res.headers['X-Authorization']
+                            token: res.headers['x-authorization']
                         });
                         done();
                     }).catch((e) => done(e));
@@ -119,7 +119,7 @@ describe('Tests on Users', () => {
                 })
                 .expect(400)
                 .expect((res) => {
-                    expect(res.headers['X-Authorization']).toBeFalsy();
+                    expect(res.headers['x-authorization']).toBeFalsy();
                 })
                 .end((err, res) => {
                     if (err) {
@@ -138,7 +138,7 @@ describe('Tests on Users', () => {
         it('should remove auth token on logout', (done) => {
             request(app)
                 .delete('/users/me/token')
-                .set('X-Authorization', users[0].tokens[0].token)
+                .set('x-authorization', users[0].tokens[0].token)
                 .expect(200)
                 .end((err, res) => {
                     if (err) {

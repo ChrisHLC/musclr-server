@@ -34,6 +34,8 @@ const EventSchema = new mongoose.Schema({
     }]
 });
 
+// PRO TIP
+// this allows us to have an object with an id instead of the mongo _id, useful for our scheduler
 EventSchema.virtual('id').get(function () {
     return this._id.toHexString();
 });
