@@ -34,7 +34,7 @@ eventRouter.delete('/:id', authenticate, async (req, res) => {
 eventRouter.get('/', authenticate, async (req, res) => {
     try {
         const events = await Event.find({creator: req.user._id});
-        res.send({events});
+        res.send(events);
     } catch (e) {
         res.status(400).send(e);
     }
