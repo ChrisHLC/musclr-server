@@ -24,5 +24,5 @@
 		}
 }
 ```
-3. Lunch mongod.exe (otherwise you will have the "something went wrong in your console")
+3. Launch mongod.exe (otherwise you will have the "something went wrong in your console")
 4. Run with npm start. Check the package.json for other scripts
