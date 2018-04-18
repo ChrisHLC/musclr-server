@@ -19,8 +19,8 @@
 		},
 		"development": {
 				"PORT": 3000,
-				"MONGODB_URI": "mongodb://localhost:27017/**YOUR_DATABASE",
-				"JWT_SECRET": "A_RANDOM_STRING**"
+				"MONGODB_URI": "mongodb://localhost:27017/YOUR_DATABASE",
+				"JWT_SECRET": "A_RANDOM_STRING"
 		}
 }
 ```
