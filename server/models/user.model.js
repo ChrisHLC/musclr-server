@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 
+// PRO TIP
+// notice the friends and events, we just store the id of the doc, not the whole doc
+// how can we get back the document with completed info? use mongoose.populate! see the addFriends method below
 const UserSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -21,25 +24,23 @@ const UserSchema = new mongoose.Schema({
         require: true,
         minlength: 6
     },
-    profile: [{
-        username: {
-            type: String,
-            trim: true,
-            minlength: 1,
-            unique: true,
-        },
-        haltr: {
-            type: Number,
-            default: 0
-        },
-        events: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Event'
-        }],
-        friends: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        }]
+    username: {
+        type: String,
+        trim: true,
+        minlength: 1,
+        unique: true,
+    },
+    events: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event'
+    }],
+    friends: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    workouts:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Workout'
     }],
     tokens: [{
         access: {
@@ -59,7 +60,7 @@ UserSchema.methods.toJSON = function () {
     const user = this;
     const userObject = user.toObject();
 
-    return _.pick(userObject, ['_id', 'email', 'profile']);
+    return _.pick(userObject, ['_id', 'email', 'username']);
 };
 
 // PRO TIP
@@ -87,6 +88,21 @@ UserSchema.methods.removeToken = function (token) {
     });
 };
 
+UserSchema.methods.addFriends = function () {
+    let user = this;
+    return user.populate('friends').execPopulate();
+};
+
+UserSchema.methods.addEvents = function () {
+    let user = this;
+    return user.populate('events').execPopulate();
+};
+
+UserSchema.methods.addWorkouts = function () {
+    let user = this;
+    return user.populate('workouts').execPopulate();
+};
+
 // PRO TIP
 // notice the difference between UserSchema.statics and UserSchema.methods, methods will apply to an User object
 // while the statics will apply the UserSchema
@@ -110,21 +126,22 @@ UserSchema.statics.findByToken = function (token) {
 UserSchema.statics.findByCredentials = function (email, password) {
     const User = this;
 
-    return User.findOne({email}).then((user) => {
-        if (!user) {
-            return Promise.reject();
-        }
+    return User.findOne({email})
+        .then((user) => {
+            if (!user) {
+                return Promise.reject();
+            }
 
-        return new Promise((resolve, reject) => {
-            bcrypt.compare(password, user.password, (err, res) => {
-                if (res) {
-                    resolve(user);
-                } else {
-                    reject();
-                }
+            return new Promise((resolve, reject) => {
+                bcrypt.compare(password, user.password, (err, res) => {
+                    if (res) {
+                        resolve(user);
+                    } else {
+                        reject();
+                    }
+                });
             });
         });
-    });
 };
 
 // PRO TIP

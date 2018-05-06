@@ -13,10 +13,7 @@ const users = [{
     _id: userOneId,
     email: 'romeo@gmail.com',
     password: '123456',
-    profile: {
-        username: "Roméo",
-        haltr: 2000
-    },
+    username: "Roméo",
     tokens: [{
         access: 'auth',
         token: jwt.sign({_id: userOneId, access: 'auth'}, process.env.JWT_SECRET).toString()
@@ -25,10 +22,7 @@ const users = [{
     _id: userTwoId,
     email: 'julia@gmail.com',
     password: '654321',
-    profile: {
-        username: "Julia",
-        haltr: 2000
-    },
+    username: "Julia",
     tokens: [{
         access: 'auth',
         token: jwt.sign({_id: userTwoId, access: 'auth'}, process.env.JWT_SECRET).toString()

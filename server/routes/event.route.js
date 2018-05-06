@@ -4,9 +4,8 @@ const _ = require('lodash');
 const {ObjectID} = require('mongodb');
 
 const {Event} = require('../models/event.model');
+const {User} = require('../models/user.model');
 const {authenticate} = require('../middleware/authenticate');
-
-const event_params = ['start_date', 'end_date', 'text', 'max_participant_number', 'participant_list'];
 
 // PRO TIP
 // notice the async and await, it's just an aesthetic change, but it allows you to manipulate Promise in a more "synchronous" way
@@ -33,7 +32,26 @@ eventRouter.delete('/:id', authenticate, async (req, res) => {
 
 eventRouter.get('/', authenticate, async (req, res) => {
     try {
-        const events = await Event.find({creator: req.user._id});
+        let events = await Event.find({creator: req.user._id});
+        for (i = 0; i < events.length; i++) {
+            await events[i].addWorkout();
+        }
+
+        res.send(events);
+    } catch (e) {
+        res.status(400).send(e);
+    }
+});
+
+eventRouter.get('/friends/:username', authenticate, async (req, res) => {
+    const username = req.params.username;
+
+    try {
+        const user = await User.findOne({username: username});
+        if (!user) {
+            return res.status(404).send();
+        }
+        const events = await Event.find({creator: user._id});
         res.send(events);
     } catch (e) {
         res.status(400).send(e);
@@ -49,7 +67,6 @@ eventRouter.get('/:id', authenticate, async (req, res) => {
 
     try {
         const event = await Event.findOne({_id: id, creator: req.user._id});
-
         if (!event) {
             return res.status(404).send();
         }
@@ -61,14 +78,19 @@ eventRouter.get('/:id', authenticate, async (req, res) => {
 
 eventRouter.patch('/:id', authenticate, async (req, res) => {
     const id = req.params.id;
-    const body = _.pick(req.body, event_params);
+    const body = req.body;
 
     if (!ObjectID.isValid(id)) {
         return res.status(404).send();
     }
 
     try {
-        const event = await Event.findOneAndUpdate({_id: id, creator: req.user._id}, {$set: body}, {new: true});
+        if (body.participate) {
+            body.participant_list.push(req.user._id);
+        } else if (body.participate === false) {
+            _.pull(body.participant_list, req.user._id);
+        }
+        const event = await Event.findOneAndUpdate({_id: id}, {$set: body}, {new: true});
         if (!event) {
             return res.status(404).send();
         }
@@ -80,12 +102,13 @@ eventRouter.patch('/:id', authenticate, async (req, res) => {
 });
 
 eventRouter.post('/', authenticate, async (req, res) => {
-    const body = _.pick(req.body, event_params);
+    const body = req.body;
     body.creator = req.user._id;
     const event = new Event(body);
 
     try {
         const doc = await event.save();
+        await User.findOneAndUpdate({_id: req.user._id}, {$push: {events: doc._id}});
         res.status(200).send(doc);
     } catch (e) {
         res.status(400).send(e);

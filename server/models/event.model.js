@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const _ = require('lodash');
 
-const event_schema_params = ['id', 'start_date', 'end_date', 'text', 'creator', 'max_participant_number', 'participant_list'];
-
 const EventSchema = new mongoose.Schema({
     start_date: {
         type: String,
@@ -19,10 +17,6 @@ const EventSchema = new mongoose.Schema({
         required: true,
         minlength: 1
     },
-    creator: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
-    },
     max_participant_number: {
         type: Number,
         min: 1,
@@ -31,7 +25,18 @@ const EventSchema = new mongoose.Schema({
     },
     participant_list: [{
         type: mongoose.Schema.Types.ObjectId,
-    }]
+        ref: 'User'
+    }],
+    workout:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Workout',
+        required: true
+    },
+    creator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
 });
 
 // PRO TIP
@@ -44,11 +49,14 @@ EventSchema.set('toObject', {
     virtuals: true
 });
 
+EventSchema.methods.addWorkout = function () {
+    let event = this;
+    return event.populate('workout').execPopulate();
+};
+
 EventSchema.methods.toJSON = function () {
     const event = this;
-    const eventObject = event.toObject();
-
-    return _.pick(eventObject, event_schema_params);
+    return event.toObject();
 };
 
 const Event = mongoose.model('Event', EventSchema);
