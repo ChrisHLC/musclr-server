@@ -5,6 +5,7 @@ const {ObjectID} = require('mongodb');
 
 const {Event} = require('../models/event.model');
 const {User} = require('../models/user.model');
+const {Workout} = require('../models/workout.model');
 const {authenticate} = require('../middleware/authenticate');
 
 // PRO TIP
@@ -33,10 +34,6 @@ eventRouter.delete('/:id', authenticate, async (req, res) => {
 eventRouter.get('/', authenticate, async (req, res) => {
     try {
         let events = await Event.find({creator: req.user._id});
-        for (i = 0; i < events.length; i++) {
-            await events[i].addWorkout();
-        }
-
         res.send(events);
     } catch (e) {
         res.status(400).send(e);
@@ -51,7 +48,12 @@ eventRouter.get('/friends/:username', authenticate, async (req, res) => {
         if (!user) {
             return res.status(404).send();
         }
-        const events = await Event.find({creator: user._id});
+        const events = await Event.find({creator: user._id}).lean();
+        for (const event of events) {
+            let workout = await Workout.findOne({_id: event.workout});
+            event.workout_name = workout.name;
+            event.id = event._id;
+        }
         res.send(events);
     } catch (e) {
         res.status(400).send(e);
@@ -95,7 +97,7 @@ eventRouter.patch('/:id', authenticate, async (req, res) => {
             return res.status(404).send();
         }
 
-        res.send({event});
+        res.send(event);
     } catch (e) {
         res.status(400).send(e);
     }
