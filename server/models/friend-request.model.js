@@ -14,6 +14,6 @@ const FriendRequestSchema = new mongoose.Schema({
     }
 });
 
-const Workout = mongoose.model('Workout', FriendRequestSchema);
+const FriendRequest = mongoose.model('FriendRequest', FriendRequestSchema);
 
-module.exports = {Workout};
+module.exports = {FriendRequest};
