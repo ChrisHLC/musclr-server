@@ -30,6 +30,20 @@ const UserSchema = new mongoose.Schema({
         minlength: 1,
         unique: true,
     },
+    birthday: {
+        type: Date
+    },
+    gender: {
+        type: String
+    },
+    level: {
+        type: String,
+        default: 'Bronze'
+    },
+    image: {
+        type: String,
+        default: 'Default.png'
+    },
     events: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Event'
@@ -38,7 +52,7 @@ const UserSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
-    workouts:[{
+    workouts: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Workout'
     }],
@@ -60,7 +74,7 @@ UserSchema.methods.toJSON = function () {
     const user = this;
     const userObject = user.toObject();
 
-    return _.pick(userObject, ['_id', 'email', 'username']);
+    return _.omit(userObject, ['password', 'tokens','__v']);
 };
 
 // PRO TIP
