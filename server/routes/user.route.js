@@ -15,30 +15,50 @@ userRouter.delete('/me/token', authenticate, async (req, res) => {
     }
 });
 
+userRouter.get('/all', authenticate, async (req, res) => {
+    const users = await User.find({});
+    res.send(users);
+});
+
 userRouter.get('/me', authenticate, (req, res) => {
     res.send(req.user);
 });
 
 userRouter.get('/friends', authenticate, async (req, res) => {
-    let user = await req.user.addFriends();
-    res.send(user.friends);
+    try {
+        let user = await req.user.addFriends();
+        res.send(user.friends);
+    } catch (e) {
+        res.status(400).send(e)
+    }
 });
 
 userRouter.get('/friends/:username', authenticate, async (req, res) => {
     const username = req.params.username;
-
-    let user = await req.user.addFriends();
-    res.send(user.friends.filter(friend => friend.username.toLowerCase().startsWith(username.toLowerCase())));
+    try {
+        let user = await req.user.addFriends();
+        res.send(user.friends.filter(friend => friend.username.toLowerCase().startsWith(username.toLowerCase())));
+    } catch (e) {
+        res.status(400).send(e)
+    }
 });
 
 userRouter.get('/events', authenticate, async (req, res) => {
-    let user = await req.user.addEvents();
-    res.send(user.events);
+    try {
+        let user = await req.user.addEvents();
+        res.send(user.events);
+    } catch (e) {
+        res.status(400).send(e)
+    }
 });
 
 userRouter.get('/workouts', authenticate, async (req, res) => {
-    let user = await req.user.addWorkouts();
-    res.send(user.workouts);
+    try {
+        let user = await req.user.addWorkouts();
+        res.send(user.workouts);
+    } catch (e) {
+        res.status(400).send(e)
+    }
 });
 
 userRouter.patch('/me', authenticate, async (req, res) => {
