@@ -94,4 +94,14 @@ userRouter.post('/login', async (req, res) => {
     }
 });
 
+userRouter.patch('/workouts/add', authenticate, async (req, res) => {
+    try {
+        const body = req.body.id;
+        const user = await User.findOneAndUpdate({_id: req.user._id}, {$push: {workouts: body}}).lean();
+        res.send({user});
+    } catch (e) {
+        res.status(400).send(e)
+    }
+});
+
 module.exports = userRouter;
