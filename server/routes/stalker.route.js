@@ -4,11 +4,21 @@ const fs = require('fs');
 
 const {Node} = require('../models/node.model');
 
-stalkerRouter.get('/', async (req, res) => {
+stalkerRouter.get('/nodes', async (req, res) => {
     try {
-        let rawdata = fs.readFileSync('./server/assets/stalker.json');
-        let student = JSON.parse(rawdata);
-        res.send(student);
+        let rawdata = fs.readFileSync('./server/assets/stalker-nodes.json');
+        let nodes = JSON.parse(rawdata);
+        res.send(nodes);
+    } catch (e) {
+        res.status(400).send(e);
+    }
+});
+
+stalkerRouter.get('/edges', async (req, res) => {
+    try {
+        let rawdata = fs.readFileSync('./server/assets/stalker-edges.json');
+        let edges = JSON.parse(rawdata);
+        res.send(edges);
     } catch (e) {
         res.status(400).send(e);
     }
