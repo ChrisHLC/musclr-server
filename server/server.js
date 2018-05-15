@@ -20,6 +20,10 @@ app.use('/users', require('./routes/user.route'));
 app.use('/events', require('./routes/event.route'));
 app.use('/workouts', require('./routes/workout.route'));
 app.use('/friend-requests', require('./routes/friend-request.route'));
+app.use('/nodes', require('./routes/node.route'));
+app.use('/stalker', require('./routes/stalker.route'));
+
+
 
 app.listen(port, () => {
     console.log(`Started up at port ${port}`);
