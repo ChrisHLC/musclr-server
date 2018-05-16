@@ -1,7 +1,3 @@
 node_modules/
 server/config/config.json
 .idea
-
-server/assets/stalker-edges\.json
-
-server/assets/stalker-nodes\.json

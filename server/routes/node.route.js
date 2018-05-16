@@ -10,18 +10,23 @@ const {Edge} = require('../models/edge.model');
 nodeRouter.get('/group/:group', async (req, res) => {
     try {
         const group = req.params.group;
-        const nodes = await Node.find({group: group});
-        fs.writeFileSync('./server/assets/stalker-nodes.json', JSON.stringify(nodes));
+        let nodes = [];
+        let edges = [];
+        if(group === '99'){
+            nodes = await Node.find({});
+            edges = await Edge.find({});
+        } else {
+            nodes = await Node.find({group: group});
 
-        let nodeIds = [];
-        nodes.forEach(n => {
-            nodeIds.push(n.id);
-        });
+            let nodeIds = [];
+            nodes.forEach(n => {
+                nodeIds.push(n.id);
+            });
 
-        const edges = await Edge.find({$and: [{source: {$in: nodeIds}}, {target: {$in: nodeIds}}]});
-        fs.writeFileSync('./server/assets/stalker-edges.json', JSON.stringify(edges));
+            edges = await Edge.find({$and: [{source: {$in: nodeIds}}, {target: {$in: nodeIds}}]});
+        }
 
-        res.sendStatus(200);
+        res.send({nodes, edges});
 
     } catch (e) {
         res.status(400).send(e);
