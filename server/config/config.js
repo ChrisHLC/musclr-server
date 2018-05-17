@@ -16,7 +16,9 @@
 // }
 const env = process.env.NODE_ENV || 'development';
 
-if (env === 'development' || env === 'test') {
+console.log(`Environment: ${env}`);
+
+if (env === 'development' || env === 'test' || env === 'docker') {
     const config = require('./config.json');
     const envConfig = config[env];
 
