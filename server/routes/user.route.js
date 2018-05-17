@@ -17,7 +17,7 @@ userRouter.delete('/me/token', authenticate, async (req, res) => {
 
 userRouter.get('/all', authenticate, async (req, res) => {
     try {
-        const users = await User.find({});
+        const users = await User.find({}).sort('username');
         res.send(users);
     } catch (e) {
         res.status(400).send(e);

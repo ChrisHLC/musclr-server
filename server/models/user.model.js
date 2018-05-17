@@ -30,6 +30,10 @@ const UserSchema = new mongoose.Schema({
         minlength: 1,
         unique: true,
     },
+    role: {
+        type: String,
+        default: 'MusclR'
+    },
     birthday: {
         type: Date
     },
@@ -74,7 +78,7 @@ UserSchema.methods.toJSON = function () {
     const user = this;
     const userObject = user.toObject();
 
-    return _.omit(userObject, ['password', 'tokens','__v']);
+    return _.omit(userObject, ['password', 'tokens', '__v']);
 };
 
 // PRO TIP
@@ -83,7 +87,7 @@ UserSchema.methods.toJSON = function () {
 UserSchema.methods.generateAuthToken = function () {
     const user = this;
     const access = 'auth';
-    const token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
+    const token = jwt.sign({_id: user._id.toHexString(), access, role: user.role}, process.env.JWT_SECRET).toString();
 
     user.tokens.push({access, token});
 
