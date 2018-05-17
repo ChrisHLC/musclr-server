@@ -24,14 +24,12 @@ userRouter.get('/all', authenticate, async (req, res) => {
     }
 });
 
-userRouter.get('/:id', authenticate, async (req, res) => {
-
+userRouter.get('/workouts', authenticate, async (req, res) => {
     try {
-        const id = req.params.id;
-        const user = await User.find({_id: id});
-        res.send(user);
+        let user = await req.user.addWorkouts();
+        res.send(user.workouts);
     } catch (e) {
-        res.status(400).send(e);
+        res.status(400).send(e)
     }
 });
 
@@ -72,12 +70,14 @@ userRouter.get('/events', authenticate, async (req, res) => {
     }
 });
 
-userRouter.get('/workouts', authenticate, async (req, res) => {
+userRouter.get('/:id', authenticate, async (req, res) => {
+
     try {
-        let user = await req.user.addWorkouts();
-        res.send(user.workouts);
+        const id = req.params.id;
+        const user = await User.find({_id: id});
+        res.send(user);
     } catch (e) {
-        res.status(400).send(e)
+        res.status(400).send(e);
     }
 });
 
