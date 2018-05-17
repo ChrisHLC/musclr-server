@@ -20,6 +20,11 @@ userRouter.get('/all', authenticate, async (req, res) => {
     res.send(users);
 });
 
+userRouter.get('/carousel/:id', authenticate, async (req, res) => {
+    const users = await User.find({'_id': {$ne: req.user._id}}).limit(9);
+    res.send(users);
+});
+
 userRouter.get('/me', authenticate, (req, res) => {
     res.send(req.user);
 });
