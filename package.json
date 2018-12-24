@@ -7,6 +7,7 @@
     "start": "node server/server.js",
     "dev": "nodemon server/server.js",
     "test": "cross-env NODE_ENV=test mocha --timeout=10000 server/**/*.test.js",
+    "travis-test": "cross-env NODE_ENV=travis-test mocha --timeout=10000 --exit server/**/*.test.js",
     "test-watch": "nodemon --exec \"npm test\""
   },
   "engines": {

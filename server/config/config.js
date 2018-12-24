@@ -26,3 +26,9 @@ if (env === 'development' || env === 'test' || env === 'docker') {
         process.env[key] = envConfig[key];
     });
 }
+
+if (env === 'travis-test') {
+    process.env['PORT'] = 3000;
+    process.env['MONGODB_URI'] ="mongodb://localhost:27017/musclr-travis";
+    process.env['JWT_SECRET'] = "a_random_string";
+}
